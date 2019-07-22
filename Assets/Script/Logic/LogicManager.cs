@@ -28,11 +28,13 @@ public class LogicManager : MonoBehaviour
 
     public int columns = 16;
     public int rows = 16;
+    public int waitMove = 0;
 
     private TileWrraper[,] mapTiles = null;
 
     private List<Unit> unitList = new List<Unit>();
     private Unit player = null;
+    private Stack<CoordDef> will_move;
 
     /// <summary>
     /// 새로운 보드매니저로 갱신
@@ -56,6 +58,17 @@ public class LogicManager : MonoBehaviour
                 {
                     tile = TileType.WALL;
                 }
+
+                if (UnityEngine.Random.Range(0, 2) < 1)
+                {
+                    tile = TileType.WALL;
+                }
+
+                if (x == 5 && y == 5)
+                {
+                    tile = TileType.FLOOR;
+                }
+
                 mapTiles[x, y] = new TileWrraper(tile);
                 Board.SetTile(tile, x, y);
             }
@@ -73,28 +86,44 @@ public class LogicManager : MonoBehaviour
 
     public void ClickTile(int x, int y)
     {
-        DebugLogger.Log("ClickTile [{0},{1}]", x, y);
-
-        if (isTileCanMove(x, y))
+        if (waitMove == 0)
         {
-            CoordDef newPos = new CoordDef(x, y);
+            DebugLogger.Log("ClickTile [{0},{1}]", x, y);
 
-            bool moveOk = AstartUtil.PathSearch(player.getPos(), newPos, out Stack<CoordDef> will_move, mapTiles, columns, rows, MOVE_TYPE.NORMAL_MOVE);
-           
-
-            if (moveOk)
+            if (isTileCanMove(x, y))
             {
-                while( will_move.Count > 0)
-                {
-                    CoordDef pos = will_move.Pop();
+                CoordDef newPos = new CoordDef(x, y);
 
-                    //DebugLogger.Log("will_move [{0},{1}]", pos.X, pos.Y);
+                bool moveOk = AstartUtil.PathSearch(player.getPos(), newPos, ref will_move, mapTiles, columns, rows, MOVE_TYPE.NORMAL_MOVE);
+
+                if (moveOk)
+                {
+                    EndTurn();
                 }
-                Board.MovingUnit(player.getSeqence(), x, y);
-                player.Pos = newPos;
             }
         }
     }
+
+    public void EndTurn()
+    {
+        if ( will_move.Count > 0)
+        {
+            CoordDef pos = will_move.Pop();
+            Board.MovingUnit(player.getSeqence(), pos.X, pos.Y);
+            waitMove++;
+            player.Pos = pos;
+        }
+    }
+
+    public void ReturnCommand()
+    {
+        waitMove--;
+        if (waitMove == 0)
+        {
+            EndTurn();
+        }
+    }
+
 
     private bool isTileOuter(int x, int y)
     {

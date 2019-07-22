@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 public class PlayerActor : MonoBehaviour
 {
     public float moveTime = 0.1f;
+    public LogicManager Manager { get; set; }
 
     private Transform position;
     private Animator animator;
@@ -51,6 +52,7 @@ public class PlayerActor : MonoBehaviour
             yield return null;
         }
         animator.SetBool("run", false);
+        Manager.ReturnCommand();
     }
 
 

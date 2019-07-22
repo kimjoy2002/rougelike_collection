@@ -6,6 +6,7 @@ using Random = UnityEngine.Random;
 
 public class UnityBoard : MonoBehaviour, IBoard
 {
+    private LogicManager logicManager;
     private ClickBoard clickBoard;
     private int columns;
     private int rows;
@@ -41,6 +42,7 @@ public class UnityBoard : MonoBehaviour, IBoard
 
     public void Initialize(LogicManager manager, int columns, int rows)
     {
+        this.logicManager = manager;
         this.columns = columns;
         this.rows = rows;
         clickBoard = gameObject.AddComponent<ClickBoard>();
@@ -103,6 +105,8 @@ public class UnityBoard : MonoBehaviour, IBoard
     public void CreateUnit(int seq, int x, int y)
     {
         GameObject playerObj = Instantiate(player, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
+        PlayerActor actor = playerObj.GetComponent<PlayerActor>();
+        actor.Manager = logicManager;
 
         unitTable.Add(seq, playerObj);
 
@@ -120,7 +124,6 @@ public class UnityBoard : MonoBehaviour, IBoard
         }
         else
         {
-
             DebugLogger.Log("WARNING) no actor unit seq[{0}] pos[{1},{2}]", seq, x, y);
         }
     }

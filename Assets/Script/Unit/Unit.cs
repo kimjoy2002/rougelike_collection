@@ -16,7 +16,7 @@ public class Unit
         pos = new CoordDef(x, y);
     }
 
-    public CoordDef Pos { get; set; }
+    public CoordDef Pos { get { return pos; } set { pos = value; } }
 
     public int X { get { return pos.X; } set { pos.X = value; }}
     public int Y { get { return pos.Y; } set { pos.Y = value; }}

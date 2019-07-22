@@ -61,7 +61,7 @@ public class AstartUtil
     }
 
 
-    public static bool PathSearch(CoordDef start, CoordDef goal, out Stack<CoordDef> will_move, TileWrraper[,] map, int columns, int rows, MOVE_TYPE type)
+    public static bool PathSearch(CoordDef start, CoordDef goal, ref Stack<CoordDef> will_move, TileWrraper[,] map, int columns, int rows, MOVE_TYPE type)
     {
         if(column != columns || row != rows)
         {
